@@ -14,7 +14,7 @@
     #samblaster (0.1.24)
     #R (3.3.3)
     #igvtools (2.3.93)
-    
+
 #Notes
     #Designed for single end reverse strand reads
     #KNOWN_SITES needs to be matched to reference.dict
@@ -26,7 +26,7 @@
         #java -jar picard.jar SortVcf \
         #I=original.vcf \
         #O=sorted.vcf \
-        #SD=reference.dict 
+        #SD=reference.dict
     #Directories cannot have a trailing slash for config
     #Supply SAMPLES_FILE as genotype:sample per line (full read file names e.g. *.R1.fq.gz)
 
@@ -65,7 +65,7 @@ elif [ ! -f "$GENOMEANALYSISTK_LOCATION" ]; then
     echo "GATK JAR binary not present, exiting!" && exit
 fi
 
-#Read in samples 
+#Read in samples
 declare -A aa_samples
 while IFS=: read -r key value; do
     aa_samples[$key]+=$(echo "$value ")
@@ -87,7 +87,7 @@ mkdir -p "$OUTPUT_FOLDER" || exit
 #Prepare Reference
 echo ">Preparing reference genome"
 if [ ! -f "${REF_LOCATION%.fa}".dict ]; then
-    java -jar "$PICARD_LOCATION" CreateSequenceDictionary R= "$REF_LOCATION" O= "${REF_LOCATION%.fa}".dict 
+    java -jar "$PICARD_LOCATION" CreateSequenceDictionary R= "$REF_LOCATION" O= "${REF_LOCATION%.fa}".dict
 elif [ ! -f "$REF_LOCATION".fai ]; then
     samtools faidx "$REF_LOCATION"
 fi
@@ -117,14 +117,14 @@ mkdir "$OUTPUT_FOLDER"/2-pass_output || exit
 for genotype in "${!aa_samples[@]}"; do
     cat $(echo "$OUTPUT_FOLDER/1-pass/$genotype*/SJ.out.tab") > "$OUTPUT_FOLDER/1-pass/$genotype.SJ.out.tab"
     for sample in $(echo "${aa_samples[$genotype]}"); do
-        mkdir "$OUTPUT_FOLDER"/2-pass_output/"$sample"        
+        mkdir "$OUTPUT_FOLDER"/2-pass_output/"$sample"
         STAR --runThreadN "$THREADS" --genomeDir "$OUTPUT_FOLDER"/genome --readFilesIn "$OUTPUT_FOLDER"/reverse_complement/"$sample" --readFilesCommand gunzip -c --outFileNamePrefix "$OUTPUT_FOLDER"/2-pass_output/"$sample"/ --outSAMattrRGline ID:"${sample%%.*}" SM:"${sample%%.*}" LB:"${sample%%.*}" PL:illumina PU:nextseq --sjdbFileChrStartEnd "$OUTPUT_FOLDER/1-pass/$genotype.SJ.out.tab" --outStd SAM |samblaster|sambamba view -t "$THREADS" -S /dev/stdin -f bam -l 0 |sambamba sort -t "$THREADS" -l 9 /dev/stdin -o "$OUTPUT_FOLDER"/2-pass_output/"$sample"/"$sample".sorted.bam
     done
-done 
- 
+done
+
 #Reassign MAPQ Scores and Split BAM
 mkdir -p "$OUTPUT_FOLDER"/vc_BAMs/split || exit
-cd "$OUTPUT_FOLDER"/reverse_complement || exit 
+cd "$OUTPUT_FOLDER"/reverse_complement || exit
 echo ">Recalibrating and splitting BAMs for all samples"
 parallel -j "$NJOBS" 'java -jar '"$GENOMEANALYSISTK_LOCATION"' -T SplitNCigarReads -R '"$REF_LOCATION"' -I '"$OUTPUT_FOLDER"'/2-pass_output/{}/{}.sorted.bam -o '"$OUTPUT_FOLDER"'/vc_BAMs/split/{}.split.bam -rf ReassignOneMappingQuality -RMQF 255 -RMQT 60 -U ALLOW_N_CIGAR_READS' ::: *.gz
 
@@ -173,7 +173,7 @@ done
 #Variant filtering
 for genotype in "${!aa_samples[@]}"; do
     echo ">Filtering variants for ${genotype##*/}"
-    java -jar "$GENOMEANALYSISTK_LOCATION" -T VariantFiltration -R "$REF_LOCATION" -V "$OUTPUT_FOLDER"/called_variants/"${genotype##*/}".vcf -window 35 -cluster 3 -filterName FS -filter "FS > 30.0" -filterName QD -filter "QD < 2.0" -o "$OUTPUT_FOLDER"/called_variants/"${genotype##*/}".filtered.vcf 
+    java -jar "$GENOMEANALYSISTK_LOCATION" -T VariantFiltration -R "$REF_LOCATION" -V "$OUTPUT_FOLDER"/called_variants/"${genotype##*/}".vcf -window 35 -cluster 3 -filterName FS -filter "FS > 30.0" -filterName QD -filter "QD < 2.0" -o "$OUTPUT_FOLDER"/called_variants/"${genotype##*/}".filtered.vcf
 done
 
 #Move output to final destination
@@ -181,6 +181,6 @@ mkdir -p "$HOME"/analyzed/ || exit
 echo ">Placing files in $HOME/analyzed/"
 mv "$OUTPUT_FOLDER" "$HOME"/analyzed/
 
-echo "Started at $START"  
+echo "Started at $START"
 echo -n "Finished at " && date
 exit
