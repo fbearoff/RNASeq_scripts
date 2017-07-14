@@ -19,5 +19,5 @@ salmon index -t "$transcriptome" -i "$destination_directory"/index --type quasi 
 for sample in "$read_files"/*.gz;
 do
 echo "Processing sample ${sample#*/}"
-salmon quant -i "$destination_directory"/index/ -l "$read_type" -r "${sample}" -o "$destination_directory"/quants/"${sample#*/}"_quant
+salmon quant -i "$destination_directory"/index/ -l "$read_type" -r "${sample}" -o "$destination_directory"/quants/"${sample##*/}"_quant
 done
