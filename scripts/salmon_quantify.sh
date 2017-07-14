@@ -5,7 +5,7 @@
 #Drexel University College of Medicine Department of Microbiology & Immunology #
 ################################################################################
 
-read_files="/home/frank/data/first_rnaseq/6LibbysRNAs"
+read_files="/home/frank/data/second_rnaseq/9FranksRNAs"
 destination_directory="/home/frank/R_projects/rnaseq2"
 read_type="SR"
 transcriptome="/home/frank/GRCm38_construct/Mus_musculus.GRCm38.cdna.all.fa.gz"
