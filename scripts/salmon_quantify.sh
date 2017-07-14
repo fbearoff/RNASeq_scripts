@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ################################################################################
-#Created by Frank Bearoff fb99@drexel.edu                                      #
+#Created by Frank Bearoff                                                      #
 #Drexel University College of Medicine Department of Microbiology & Immunology #
 ################################################################################
 
