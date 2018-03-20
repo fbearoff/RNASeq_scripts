@@ -5,8 +5,8 @@
 #Drexel University College of Medicine Department of Microbiology & Immunology #
 ################################################################################
 
-read_files="/home/frank/data/ALS_RNASeq2/20180302blankenhorn"
-destination_directory="/home/frank/R_projects/ALS_RNASeq2"
+read_files="/home/frank/data/combined_ALS_RNASeq"
+destination_directory="/home/frank/R_projects/combined_ALS_RNASeqs"
 read_type="ISR"
 transcriptome="/home/frank/GRCm38_construct/Mus_musculus.GRCm38.cdna.all.fa.gz"
 

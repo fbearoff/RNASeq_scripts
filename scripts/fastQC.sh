@@ -3,8 +3,14 @@
 INPUT_DIR="$1"
 OUTPUT_DIR="$2"
 
-mkidr -p "$OUTPUT_DIR" || exit
+if [ "$#" -ne 2 ]; then
+    echo "Run FastQC on a directory of FastQ files"
+    echo "sh fastQC.sh 'FastQ Dir' 'Output Dir'"
+    exit
+fi
 
-for file in "$INPUT_DIR"; do
-    fastqc $file --outdir="$OUTPUT_DIR"
+mkdir -p "$OUTPUT_DIR" || exit
+
+for file in $INPUT_DIR; do
+    fastqc "$file" --outdir="$OUTPUT_DIR"
 done

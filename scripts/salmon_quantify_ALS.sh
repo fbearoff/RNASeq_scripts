@@ -19,5 +19,5 @@ for sample in "$read_files"/*.R1.fq.gz;
 do
 base_name="${sample##*/}"
 echo "Processing sample ${base_name%%.R1*}"
-salmon quant -i "$destination_directory"/index/ -l $read_type -1"${sample}" -2 "${sample%%.R1*}.R2.fq.gz" -o "$destination_directory"/quants/"${base_name%%.R1*}"
+salmon quant -i "$destination_directory"/index/ --gcBias -l $read_type -1"${sample}" -2 "${sample%%.R1*}.R2.fq.gz" -o "$destination_directory"/quants/"${base_name%%.R1*}"
 done
