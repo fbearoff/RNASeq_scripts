@@ -1,6 +1,7 @@
 # Inputs ------------------------------------------------------------------
 #input is .lqual file from vcftools (--site-quality option)
 snp_quality <- ""
+WD <- ""
 genotype <- ""
 
 # main --------------------------------------------------------------------
@@ -14,6 +15,7 @@ snps <-
 goodchrorder <- c(1:22, "X", "Y", "MT")
 snps$CHROM <- factor(snps$CHROM, levels = goodchrorder)
 snps <- subset(snps, snps$CHROM != "NA")
+snps <- subset(snps, snps$CHROM == 10)
 
 snpdensity <- ggplot(snps) +
   geom_histogram(aes(x = POS), binwidth = 1e6) +
@@ -24,7 +26,6 @@ snpdensity <- ggplot(snps) +
   ylab("SNP Density") +
   theme_bw()
 
-snpdensity
-pdf(file = paste(genotype, "_SNP_Density", sep = ""))
+pdf(file = paste0(WD, genotype, "_SNP_Density.pdf"))
 snpdensity
 dev.off()
