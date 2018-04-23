@@ -28,17 +28,17 @@ fi
 
 mkdir -p "$output_folder" || exit
 
-# for sample in ${aa_samples[@]}; do
-#     echo "> Running QC on sample $sample"
-#     java -jar $qorts_location QC \
-#         --stranded \
-#         --generatePlots \
-#         --genomeFA $fasta_ref \
-#         --rawfastq "$fastq_folder"/"$sample".R1.fq.gz,"$fastq_folder"/"$sample".R2.fq.gz \
-#         "$bam_folder"/"$sample"/Aligned.sortedByCoord.out.bam \
-#         $gtf_file \
-#         "$output_folder"/"$sample"
-# done
+for sample in ${aa_samples[@]}; do
+    echo "> Running QC on sample $sample"
+    java -jar $qorts_location QC \
+        --stranded \
+        --generatePlots \
+        --genomeFA $fasta_ref \
+        --rawfastq "$fastq_folder"/"$sample".R1.fq.gz,"$fastq_folder"/"$sample".R2.fq.gz \
+        "$bam_folder"/"$sample"/Aligned.sortedByCoord.out.bam \
+        $gtf_file \
+        "$output_folder"/"$sample"
+done
 java -jar $qorts_location \
         mergeNovelSplices \
         --minCount 6 \
